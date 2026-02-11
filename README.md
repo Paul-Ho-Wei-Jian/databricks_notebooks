@@ -1,5 +1,10 @@
 # StackExchange Medallion Architecture Project (Databricks)
 
+## Project Screenshot(s)
+![workflow_succesffulRun](job_successful_run)
+![dashboard](dashboard1.png)
+![medallion_DFD](databricks_Medallion.jpg)
+
 ## Dataset
 
 **Link to Dataset:** [StackExchange Data Dump](https://archive.org/download/stackexchange)  
@@ -61,9 +66,3 @@ This allows analysis of how many posts use each tag.
 - Audit logging
 - Quarantine pattern for invalid records
 - Incremental data processing
-
-
-## Project Screenshot(s)
-![workflow_succesffulRun](job_successful_run)
-![dashboard](dashboard1.png)
-![medallion_DFD](databricks_Medallion.jpg)
