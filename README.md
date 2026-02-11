@@ -1,15 +1,5 @@
 # StackExchange Medallion Architecture Project (Databricks)
 
-## Overview
-
-This project implements a **Medallion Architecture** (Bronze → Silver → Gold) in Databricks using the StackExchange dataset.  
-
-## Project Screenshots
-![workflow_succesffulRun](job_successful_run)
-![dashboard](dashboard1.png)
-
----
-
 ## Dataset
 
 **Link to Dataset:** [StackExchange Data Dump](https://archive.org/download/stackexchange)  
@@ -81,3 +71,10 @@ This project demonstrates:
 - Gold layer: denormalised and aggregated tables ready for analysis.  
 
 It follows the Medallion Architecture best practices in Databricks while maintaining data quality, reliability, and auditability.
+
+---
+
+## Project Screenshot(s)
+![workflow_succesffulRun](job_successful_run)
+![dashboard](dashboard1.png)
+![medallion_DFD](databricks_Medallion.jpg)
