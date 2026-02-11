@@ -1,26 +1,19 @@
-# Databricks Medallion Architecture
+# StackExchange Medallion Architecture Project (Databricks)
 
 ## Overview
 
-This project implements a **Medallion Architecture (Bronze → Silver → Gold)** pipeline in Databricks using the StackExchange dataset.
+This project implements a **Medallion Architecture** (Bronze → Silver → Gold) in Databricks using the StackExchange dataset.  
 
-It demonstrates:
-
-- Declarative Spark transformations (PySpark)
-- Built-in schema detection
-- Data quality enforcement using DQX
-- Incremental upserts with Delta Lake
-- Governance and auditability best practices
-- Gold-layer analytical modelling
+It demonstrates how to repeatably process, cleanse, and structure data efficiently using Databricks and PySpark.
 
 ---
 
 ## Dataset
 
-**Source:** StackExchange Data Dump  
-https://archive.org/download/stackexchange  
+**Link to Dataset:** [StackExchange Data Dump](https://archive.org/download/stackexchange)  
 
 Files used:
+
 - `Posts.xml`
 - `Users.xml`
 
@@ -28,141 +21,65 @@ The XML files are read from a Databricks volume and processed through Bronze, Si
 
 ---
 
-## Architecture
-
-Raw XML → Bronze (raw + validated)
-↓
-Silver (cleaned + enriched)
-↓
-Gold (denormalised + aggregated analytics)
-
-
----
-
 ## Bronze Layer
 
 ### Ingestion
 
-- Read `Posts.xml` and `Users.xml` from volume
-- Declarative transformations written in PySpark
-- Schema defined using Databricks **Genie** for accurate struct inference  
-  (avoids `inferSchema`, which can be slow or error-prone for XML)
+- Read `Posts.xml` and `Users.xml` from volume.  
+- Declarative transformation using Spark, implemented in a Python notebook.  
 
 ---
 
 ### Bronze Data Quality (DQX)
 
-Data quality checks implemented using the Databricks DQX framework.
+Databricks built-in **Genie** feature provides a quick way to detect the correct schema struct type instead of Spark’s built-in `inferSchema`, which can be error-prone or slow.  
 
-#### Error Criticality Rules (Quarantine on Failure)
+The following rules are applied:
 
-If these fail, records are split into a quarantined dataframe:
+#### Error Criticality Rules (quarantined if failed)
 
-- `Id` must **NOT** be NULL  
-- `CreationDate` must **NOT** be NULL  
-- `CreationDate` must **NOT** be in the future  
+- `Id` and `CreationDate` must NOT be NULL  
+- `CreationDate` must not be in the future  
 
-Invalid records are separated for manual review.
-
----
+Records failing these rules are considered invalid and are quarantined into a separate dataframe for manual intervention.
 
 #### Warning Criticality Rule
 
 - `PostTypeId` must contain allowed values  
 
-This is marked as **warning**, as new `PostTypeId` values may legitimately appear from the upstream source.
-
----
-
-### Bronze Output
-
-- Valid records → Bronze Delta tables  
-- Invalid records → Quarantine dataframe/table  
+This rule is of warning criticality, as new PostType IDs might be introduced in the source data.
 
 ---
 
 ## Silver Layer
 
-The Silver layer applies business transformations to clean and enrich Bronze data.
+Takes in raw posts and applies the following transformations:
 
-### Transformations Applied
-
-#### 1. Tag Normalisation
-- Split `Tags` column by `|`
-- Store as Python list (Spark array type) in a new column `TagsArray`
-
-#### 2. Post Type Mapping
-- Map `PostTypeId` to descriptive string values
-- Create new column: `PostType`
-
----
+- Split the `Tags` column by `|` and store it as a Python list in a new column `TagsArray`.  
+- Map `PostTypeId` to descriptive strings in a new column `PostType`.  
 
 ### Optimisations
 
-#### Full Refresh Logic
-- Performs full load only if the target table does not exist.
-
-#### Incremental Upsert (Delta Lake)
-
-Implements incremental processing using `updated_at`:
-
-1. Identify max `updated_at` in existing Silver table  
-2. Filter incoming Bronze records where:
-
-
-3. Perform Delta `MERGE` (upsert)
-
-This reduces write volume and improves performance.
+- Performs a **full refresh** only if the post table does not already exist.  
+- Implements **incremental upsert** by filtering only rows where `updated_at` in the new table is greater than the max `updated_at` in the old table. This reduces the number of rows that need to be written.
 
 ---
 
 ## Gold Layer
 
-### 1. Denormalised Analytical Table
+- Create one denormalised table by joining Posts and Users tables.  
+- Create another table that collects all rows with the same tag into one group and counts the number of **unique posts** per tag.  
 
-Creates a single wide table by joining:
-
-- Posts
-- Users
-
-This produces a query-optimised dataset for reporting and analytics.
+This allows analysis of how many posts use each tag.
 
 ---
 
-### 2. Tag Aggregation Table
+## Summary
 
-Creates an aggregated Gold table:
+This project demonstrates:
 
-- Explodes `TagsArray`
-- Groups by tag
-- Counts number of **distinct posts** per tag
+- Bronze layer: raw ingestion with data quality checks and quarantine for invalid records.  
+- Silver layer: cleaning, enrichment, and incremental upsert optimisation.  
+- Gold layer: denormalised and aggregated tables ready for analysis.  
 
-**Result Schema:**
-
-
-This enables analysis of tag popularity across posts.
-
----
-
-## Key Concepts Demonstrated
-
-- Medallion Architecture implementation
-- Declarative Spark transformations
-- Built-in schema struct generation
-- Data quality enforcement with quarantine pattern
-- Delta Lake incremental upserts
-- Gold-layer denormalisation
-- Aggregation modelling for analytics
-- Governance-ready design
-
----
-
-## Governance & Reliability Features
-
-- Data lineage via Unity Catalog
-- Delta Lake versioning & time travel
-- Audit logging
-- Quarantine pattern for invalid records
-- Incremental data processing
-
----
+It follows the Medallion Architecture best practices in Databricks while maintaining data quality, reliability, and auditability.
