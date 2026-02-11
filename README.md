@@ -6,6 +6,7 @@ This project implements a **Medallion Architecture** (Bronze → Silver → Gold
 
 ## Project Screenshots
 ![workflow_succesffulRun](job_successful_run)
+![dashboard](dashboard1.png)
 
 ---
 
