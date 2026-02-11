@@ -4,7 +4,8 @@
 
 This project implements a **Medallion Architecture** (Bronze → Silver → Gold) in Databricks using the StackExchange dataset.  
 
-It demonstrates how to repeatably process, cleanse, and structure data efficiently using Databricks and PySpark.
+## Project Screenshots
+![workflow_succesffulRun](job_successful_run)
 
 ---
 
@@ -23,12 +24,8 @@ The XML files are read from a Databricks volume and processed through Bronze, Si
 
 ## Bronze Layer
 
-### Ingestion
-
 - Read `Posts.xml` and `Users.xml` from volume.  
 - Declarative transformation using Spark, implemented in a Python notebook.  
-
----
 
 ### Bronze Data Quality (DQX)
 
