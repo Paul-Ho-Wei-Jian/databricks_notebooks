@@ -11,8 +11,6 @@ Files used:
 
 The XML files are read from a Databricks volume and processed through Bronze, Silver, and Gold layers.
 
----
-
 ## Bronze Layer
 
 - Read `Posts.xml` and `Users.xml` from volume.  
@@ -37,8 +35,6 @@ Records failing these rules are considered invalid and are quarantined into a se
 
 This rule is of warning criticality, as new PostType IDs might be introduced in the source data.
 
----
-
 ## Silver Layer
 
 Takes in raw posts and applies the following transformations:
@@ -51,8 +47,6 @@ Takes in raw posts and applies the following transformations:
 - Performs a **full refresh** only if the post table does not already exist.  
 - Implements **incremental upsert** by filtering only rows where `updated_at` in the new table is greater than the max `updated_at` in the old table. This reduces the number of rows that need to be written.
 
----
-
 ## Gold Layer
 
 - Create one denormalised table by joining Posts and Users tables.  
@@ -60,19 +54,25 @@ Takes in raw posts and applies the following transformations:
 
 This allows analysis of how many posts use each tag.
 
----
+## Key Concepts Demonstrated
 
-## Summary
+- Medallion Architecture implementation
+- Declarative Spark transformations
+- Built-in schema struct generation
+- Data quality enforcement with quarantine pattern
+- Delta Lake incremental upserts
+- Gold-layer denormalisation
+- Aggregation modelling for analytics
+- Governance-ready design
 
-This project demonstrates:
+## Governance & Reliability Features
 
-- Bronze layer: raw ingestion with data quality checks and quarantine for invalid records.  
-- Silver layer: cleaning, enrichment, and incremental upsert optimisation.  
-- Gold layer: denormalised and aggregated tables ready for analysis.  
+- Data lineage via Unity Catalog
+- Delta Lake versioning & time travel
+- Audit logging
+- Quarantine pattern for invalid records
+- Incremental data processing
 
-It follows the Medallion Architecture best practices in Databricks while maintaining data quality, reliability, and auditability.
-
----
 
 ## Project Screenshot(s)
 ![workflow_succesffulRun](job_successful_run)
