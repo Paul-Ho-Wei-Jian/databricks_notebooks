@@ -54,17 +54,6 @@ Takes in raw posts and applies the following transformations:
 
 This allows analysis of how many posts use each tag.
 
-## Key Concepts Demonstrated
-
-- Medallion Architecture implementation
-- Declarative Spark transformations
-- Built-in schema struct generation
-- Data quality enforcement with quarantine pattern
-- Delta Lake incremental upserts
-- Gold-layer denormalisation
-- Aggregation modelling for analytics
-- Governance-ready design
-
 ## Governance & Reliability Features
 
 - Data lineage via Unity Catalog
